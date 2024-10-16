@@ -1,0 +1,17 @@
+13:32:48 **** Incremental Build of configuration Debug for project RTOS Playground ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/freertos.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/freertos.d" -MT"Core/Src/freertos.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/freertos.o"
+arm-none-eabi-gcc -o "RTOS Playground.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Plutonium\MyProjects\CodePuzzles\STM32-RTOS\stm32\RTOS Playground\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RTOS Playground.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: RTOS Playground.elf
+ 
+arm-none-eabi-size  RTOS\ Playground.elf 
+arm-none-eabi-objdump -h -S RTOS\ Playground.elf  > "RTOS Playground.list"
+   text	   data	    bss	    dec	    hex	filename
+  26580	    108	  20828	  47516	   b99c	RTOS Playground.elf
+Finished building: default.size.stdout
+ 
+Finished building: RTOS Playground.list
+ 
+
+13:32:49 Build Finished. 0 errors, 0 warnings. (took 1s.17ms)
+
