@@ -36,7 +36,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+typedef struct
+{
+	uint16_t Value;
+	uint8_t Source;
+} Data;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -46,7 +50,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+Data DataToSend1={'a', 1};
+Data DataToSend2={'b', 2};
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -62,6 +67,23 @@ const osThreadAttr_t helloTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for senderTask */
+osThreadId_t senderTaskHandle;
+const osThreadAttr_t senderTask_attributes = {
+  .name = "senderTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for QueueSimpleData */
+osMessageQueueId_t QueueSimpleDataHandle;
+const osMessageQueueAttr_t QueueSimpleData_attributes = {
+  .name = "QueueSimpleData"
+};
+/* Definitions for QueueStructData */
+osMessageQueueId_t QueueStructDataHandle;
+const osMessageQueueAttr_t QueueStructData_attributes = {
+  .name = "QueueStructData"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -70,6 +92,7 @@ const osThreadAttr_t helloTask_attributes = {
 
 void StartDefaultTask(void *argument);
 void StartHelloTask(void *argument);
+void StartSenderTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -95,6 +118,13 @@ void MX_FREERTOS_Init(void) {
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of QueueSimpleData */
+  QueueSimpleDataHandle = osMessageQueueNew (8, sizeof(uint8_t), &QueueSimpleData_attributes);
+
+  /* creation of QueueStructData */
+  QueueStructDataHandle = osMessageQueueNew (8, sizeof(Data), &QueueStructData_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -105,6 +135,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of helloTask */
   helloTaskHandle = osThreadNew(StartHelloTask, NULL, &helloTask_attributes);
+
+  /* creation of senderTask */
+  senderTaskHandle = osThreadNew(StartSenderTask, NULL, &senderTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -126,11 +159,37 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+  uint8_t x=0;
+  uint32_t queue_cap = osMessageQueueGetCapacity(QueueSimpleDataHandle);
+  uint32_t num_in_queue, space_in_queue;
+  osStatus_t s_state;
   /* Infinite loop */
   for(;;)
   {
 	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    osDelay(500);
+	num_in_queue = osMessageQueueGetCount(QueueSimpleDataHandle);
+	space_in_queue = osMessageQueueGetSpace(QueueSimpleDataHandle);
+	s_state = osMessageQueuePut(QueueSimpleDataHandle, &x, 0, 100);
+	if(s_state == osOK)
+	{
+		if(++x>9)
+		{
+			x=0;
+		}
+	}
+	else
+	{
+		printf("osMessageQueuePut Timeout\n");
+	}
+	printf("Queue Stats (%u:%u) Space %u\n", num_in_queue, queue_cap, space_in_queue);
+
+	s_state = osMessageQueuePut(QueueStructDataHandle, &DataToSend1, 0, 100);
+	if(s_state != osOK)
+	{
+		printf("osMessageQueuePut Timeout\n");
+	}
+
+    osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -145,15 +204,54 @@ void StartDefaultTask(void *argument)
 void StartHelloTask(void *argument)
 {
   /* USER CODE BEGIN StartHelloTask */
+  uint8_t rec_x;
+  Data retvalue;
+  osStatus_t r_state;
   /* Infinite loop */
-  uint16_t counter = 0;
   for(;;)
   {
-	printf("Hello RTOS %d\n",counter);
-	counter++;
-    osDelay(250);
+	r_state = osMessageQueueGet(QueueSimpleDataHandle, &rec_x, 0, 0);
+	if(r_state == osOK)
+	{
+		printf("Hello RTOS %d\n",rec_x);
+	}
+	else
+	{
+//		printf("osMessageQueueGet Timeout\n");
+	}
+
+	r_state = osMessageQueueGet(QueueStructDataHandle, &retvalue, 0, 0);
+	if(r_state == osOK)
+	{
+		printf("Struct Data: %c, %u\n",retvalue.Value, retvalue.Source);
+	}
+	else
+	{
+//		printf("osMessageQueueGet Timeout\n");
+	}
+
+    osDelay(100);
   }
   /* USER CODE END StartHelloTask */
+}
+
+/* USER CODE BEGIN Header_StartSenderTask */
+/**
+* @brief Function implementing the senderTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartSenderTask */
+void StartSenderTask(void *argument)
+{
+  /* USER CODE BEGIN StartSenderTask */
+  /* Infinite loop */
+  for(;;)
+  {
+	osMessageQueuePut(QueueStructDataHandle, &DataToSend2, 0, 200);
+    osDelay(2000);
+  }
+  /* USER CODE END StartSenderTask */
 }
 
 /* Private application code --------------------------------------------------*/

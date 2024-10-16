@@ -1,17 +1,36 @@
-13:32:48 **** Incremental Build of configuration Debug for project RTOS Playground ****
+16:47:07 **** Incremental Build of configuration Debug for project RTOS Playground ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/freertos.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/freertos.d" -MT"Core/Src/freertos.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/freertos.o"
+../Core/Src/freertos.c: In function 'StartDefaultTask':
+../Core/Src/freertos.c:184:31: warning: format '%u' expects argument of type 'unsigned int', but argument 2 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  184 |         printf("Queue Stats (%u:%u) Space %u\n", num_in_queue, queue_cap, space_in_queue);
+      |                              ~^                  ~~~~~~~~~~~~
+      |                               |                  |
+      |                               unsigned int       uint32_t {aka long unsigned int}
+      |                              %lu
+../Core/Src/freertos.c:184:34: warning: format '%u' expects argument of type 'unsigned int', but argument 3 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  184 |         printf("Queue Stats (%u:%u) Space %u\n", num_in_queue, queue_cap, space_in_queue);
+      |                                 ~^                             ~~~~~~~~~
+      |                                  |                             |
+      |                                  unsigned int                  uint32_t {aka long unsigned int}
+      |                                 %lu
+../Core/Src/freertos.c:184:44: warning: format '%u' expects argument of type 'unsigned int', but argument 4 has type 'uint32_t' {aka 'long unsigned int'} [-Wformat=]
+  184 |         printf("Queue Stats (%u:%u) Space %u\n", num_in_queue, queue_cap, space_in_queue);
+      |                                           ~^                              ~~~~~~~~~~~~~~
+      |                                            |                              |
+      |                                            unsigned int                   uint32_t {aka long unsigned int}
+      |                                           %lu
 arm-none-eabi-gcc -o "RTOS Playground.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\Plutonium\MyProjects\CodePuzzles\STM32-RTOS\stm32\RTOS Playground\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RTOS Playground.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: RTOS Playground.elf
  
 arm-none-eabi-size  RTOS\ Playground.elf 
 arm-none-eabi-objdump -h -S RTOS\ Playground.elf  > "RTOS Playground.list"
    text	   data	    bss	    dec	    hex	filename
-  26580	    108	  20828	  47516	   b99c	RTOS Playground.elf
+  28708	    116	  20836	  49660	   c1fc	RTOS Playground.elf
 Finished building: default.size.stdout
  
 Finished building: RTOS Playground.list
  
 
-13:32:49 Build Finished. 0 errors, 0 warnings. (took 1s.17ms)
+16:47:09 Build Finished. 0 errors, 3 warnings. (took 1s.379ms)
 

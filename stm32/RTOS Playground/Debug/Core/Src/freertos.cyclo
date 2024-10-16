@@ -1,3 +1,4 @@
-../Core/Src/freertos.c:81:6:MX_FREERTOS_Init	1
-../Core/Src/freertos.c:126:6:StartDefaultTask	1
-../Core/Src/freertos.c:145:6:StartHelloTask	1
+../Core/Src/freertos.c:104:6:MX_FREERTOS_Init	1
+../Core/Src/freertos.c:159:6:StartDefaultTask	4
+../Core/Src/freertos.c:204:6:StartHelloTask	3
+../Core/Src/freertos.c:245:6:StartSenderTask	1
